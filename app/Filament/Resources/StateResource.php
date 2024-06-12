@@ -17,6 +17,7 @@ use Filament\Forms\Components\BelongsToSelect;
 use App\Filament\Resources\StateResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StateResource\RelationManagers;
+use Filament\Forms\Components\Select;
 
 class StateResource extends Resource
 {
@@ -33,7 +34,10 @@ class StateResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-            
+                Select::make('country_id')
+                ->relationship('country', 'name')
+                ->searchable()
+                ->required()
             ]);
     }
 

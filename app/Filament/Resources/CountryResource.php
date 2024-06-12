@@ -28,7 +28,23 @@ class CountryResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+         
+                Forms\Components\TextInput::make('code')
+                    ->required()
+                    ->maxLength(3),
+                    //phone code input not limit 5 numbers
+                    
+                Forms\Components\TextInput::make('phone_code')
+                ->maxLength(5)
+                ->required()
+                ->numeric()
+                ->rules(['numeric', 'max:5']),
+
+                
+                
             ]);
     }
 

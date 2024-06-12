@@ -2,16 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\EmployeeResource\Pages;
-use App\Filament\Resources\EmployeeResource\RelationManagers;
-use App\Models\Employee;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\City;
 use Filament\Tables;
+use App\Models\State;
+use Filament\Forms\Get;
+use App\Models\Employee;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Collection;
+use Filament\Forms\Components\Select;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\EmployeeResource\RelationManagers;
+use Filament\Forms\Set;
 
 class EmployeeResource extends Resource
 {
@@ -56,15 +62,43 @@ class EmployeeResource extends Resource
    
 
                 Forms\Components\Section::make([
-                    // third section
-                    Forms\Components\TextInput::make('department_id')
-                        ->numeric(),
-                    Forms\Components\TextInput::make('city_id')
-                        ->numeric(),
-                    Forms\Components\TextInput::make('country_id')
-                        ->numeric(),
-                    Forms\Components\TextInput::make('state_id')
-                        ->numeric(),
+
+                    Select::make('country_id')
+                    ->relationship('country', 'name')
+                    ->searchable()
+                    ->required()
+                    ->live()
+                    ->afterStateUpdated(function(Set $set) {
+                        $set('state_id', null);
+                        $set('city_id', null);
+                    }),
+                    Select::make('state_id')
+                    ->options(fn(Get $get): Collection => 
+                        State::query()
+                        ->where('country_id', $get('country_id'))
+                        ->pluck('name', 'id')
+                    )
+                    ->preload()
+                    ->live()
+                    ->searchable()
+                    ->required()
+                    ->afterStateUpdated(fn(Set $set) => $set('city_id', null) ),
+                    Select::make('city_id')
+                    ->options(
+                        fn(Get $get): Collection => 
+                        City::query()
+                        ->where('state_id', $get('state_id'))
+                        ->pluck('name', 'id')
+                    )
+                    ->searchable()
+                    ->live()
+                    ->required()
+                    ->preload(),
+                    Select::make('department_id')
+                    ->relationship('department', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
                 ])   ->columns(2)
                 ->description('Location Information'),
             
