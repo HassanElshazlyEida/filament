@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use Pages\ViewCity;
 use App\Models\City;
 use Filament\Tables;
 use Filament\Forms\Form;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\CityResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\CityResource\RelationManagers;
+use App\Filament\Resources\CityResource\RelationManagers\EmployeesRelationManager;
 
 class CityResource extends Resource
 {
@@ -30,7 +32,7 @@ class CityResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Select::make('state_id')
-                    ->relationship('country', 'name')
+                    ->relationship('state', 'name')
                     ->searchable()
                     ->required()
             ]);
@@ -59,6 +61,7 @@ class CityResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -70,7 +73,7 @@ class CityResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+           EmployeesRelationManager::class, 
         ];
     }
 
@@ -79,7 +82,9 @@ class CityResource extends Resource
         return [
             'index' => Pages\ListCities::route('/'),
             'create' => Pages\CreateCity::route('/create'),
+            'view'=>Pages\ViewCity::route('/{record}'),
             'edit' => Pages\EditCity::route('/{record}/edit'),
+
         ];
     }
 }

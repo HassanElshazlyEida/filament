@@ -22,6 +22,8 @@ use Filament\Forms\Components\BelongsToSelect;
 use App\Filament\Resources\StateResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StateResource\RelationManagers;
+use App\Filament\Resources\StateResource\RelationManagers\CitiesRelationManager;
+use App\Filament\Resources\StateResource\RelationManagers\EmployeesRelationManager;
 
 class StateResource extends Resource
 {
@@ -49,7 +51,8 @@ class StateResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('country.name'),
+                Tables\Columns\TextColumn::make('country.name')
+                ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                
@@ -80,7 +83,8 @@ class StateResource extends Resource
     {
         return [           
 
-           
+            CitiesRelationManager::class,
+            EmployeesRelationManager::class,
         ];
     }
 
