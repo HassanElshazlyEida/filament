@@ -15,15 +15,16 @@ class Employee extends Model
     protected $fillable = [
         'first_name',
         'last_name',
-        'email',
-        'phone',
-        'company',
+        'middle_name',
+        'address',
+        'zip_code',
+        'date_of_birth',
+        'date_hired',
+        'department_id',
         'city_id',
         'state_id',
-        'country_id',
-        'department_id',
-        'salary',
-        'status'
+        'country_id'
+        
     ];
     public function city(){
         return $this->belongsTo(City::class);

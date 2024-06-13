@@ -7,17 +7,20 @@ use App\Models\City;
 use Filament\Tables;
 use App\Models\State;
 use Filament\Forms\Get;
+use Filament\Forms\Set;
 use App\Models\Employee;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Collection;
+use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
-use Filament\Forms\Set;
 
 class EmployeeResource extends Resource
 {
@@ -38,11 +41,14 @@ class EmployeeResource extends Resource
                         ->required()
                         ->maxLength(255),
                     Forms\Components\TextInput::make('middle_name')
-                        ->required()
+     
                         ->maxLength(255),
                         Forms\Components\DatePicker::make('date_of_birth')
+                        ->displayFormat('Y-m-d')
+                        ->native(false)
                         ->required(),
                     Forms\Components\DatePicker::make('date_hired')
+                        ->native(false)
                         ->required()
                         ->columnSpanFull()
                 ])
@@ -115,28 +121,26 @@ class EmployeeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('middle_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('zip_code')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('date_of_birth')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('date_hired')
+                    ->hidden(true)
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('department_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('city_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('country_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('state_id')
-                    ->numeric()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('department.name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('city.name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('state.name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('country.name')
+                    ->searchable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -147,8 +151,46 @@ class EmployeeResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+               SelectFilter::make('Department')
+               ->relationship('department', 'name')
+               ->searchable()
+               ->preload()
+               ->label('Filter By Department')
+               ->indicator('Department'),
+               Filter::make('created_at')
+               ->form([
+                    Forms\Components\DatePicker::make('created_from')
+                    ->label('Created From')
+                    ->date()
+                    ->required()
+                    ->native(false),
+                    Forms\Components\DatePicker::make('created_until')
+                    ->label('Created Until')
+                    ->date()
+                    ->native(false)
+                    ->required(),
+               ])
+               ->query( function(Builder $query, array $data) :Builder {
+                    return $query
+                    ->when(
+                        $data['created_from'],
+                        fn(Builder $query, $date) => $query->whereDate('created_at', '>=', $date)
+                    )
+                    ->when(
+                        $data['created_until'],
+                        fn(Builder $query, $date) => $query->whereDate('created_at', '<=', $date)
+                    );
+                }
+               )
+               ->indicateUsing(function(array $data){
+                    $indicators = [];
+                    if($data['created_from'] ?? null)
+                        $indicators[] = 'Created From ' . $data['created_from'];
+                    if($data['created_until']  ?? null )
+                        $indicators[] = 'Created Until ' . $data['created_until'];
+                    return $indicators;
+                })->columnSpan(2)->columns(2)
+            ], FiltersLayout::AboveContentCollapsible)->filtersFormColumns(3)
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
