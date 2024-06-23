@@ -15,14 +15,15 @@ use Filament\Resources\Resource;
 use Illuminate\Support\Collection;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\Select;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Support\Htmlable;
 use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Support\Htmlable;
 
 class EmployeeResource extends Resource
 {
@@ -228,6 +229,17 @@ class EmployeeResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                ->successNotification(
+                    Notification::make()
+                    ->title(
+                        'Employee Deleted'
+                    )
+                    ->body(
+                        'Employee has been deleted successfully.'
+                    )
+                    ->success()
+                )
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
