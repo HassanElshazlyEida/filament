@@ -33,6 +33,12 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Lime,
                 'danger' => Color::Rose,
             ])
+            ->navigationGroups([
+                'Department',
+                'Area',
+                'Management',
+
+            ])
             ->brandLogo(asset('images/logo.png'))
             ->font('Roboto Slab')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')

@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\EmployeeResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\EmployeeResource\RelationManagers;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Support\Htmlable;
 
 class EmployeeResource extends Resource
 {
@@ -28,6 +30,38 @@ class EmployeeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Department';
+    protected static ?string $recordTitleAttribute = 'first_name';
+
+    public static function getGlobalSearchResultTitle(Model $record): string| Htmlable
+    {
+        return $record->full_name;
+    }
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['first_name', 'last_name', 'middle_name', 'address', 'zip_code','country.name'];
+    }
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            // 'Department' => $record->department->name,
+            // 'City' => $record->city->name,
+            // 'State' => $record->state->name,
+            'Country' => $record->country->name,
+        ];
+    }
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return  parent::getGlobalSearchEloquentQuery()
+            ->with('country');
+    }
+    public static function getNavigationBadge(): ?string
+    {
+        return Employee::count();
+    }
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'danger';
+    }
     public static function form(Form $form): Form
     {
         return $form

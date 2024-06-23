@@ -24,7 +24,7 @@ class Employee extends Model
         'city_id',
         'state_id',
         'country_id'
-        
+
     ];
     public function city(){
         return $this->belongsTo(City::class);
@@ -37,6 +37,11 @@ class Employee extends Model
     }
     public function department(){
         return $this->belongsTo(Department::class);
+    }
+
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
     }
     
 }
