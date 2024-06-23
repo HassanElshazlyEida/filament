@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date("date_of_birth");
             $table->date("date_hired");
             $table->foreignIdFor(\App\Models\Department::class)->nullable()->constrained()->onDelete('set null');
+            $table->foreignIdFor(\App\Models\Team::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignIdFor(\App\Models\City::class)->nullable()->constrained()->onDelete('set null');
             $table->foreignIdFor(\App\Models\Country::class)->nullable()->constrained()->onDelete('set null');
             $table->foreignIdFor(\App\Models\State::class)->nullable()->constrained()->onDelete('set null');

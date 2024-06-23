@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Tenancy\EditTeamProfile;
+use App\Filament\Pages\Tenancy\RegisterTeam;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -10,6 +12,7 @@ use Filament\Support\Colors\Color;
 use App\Filament\Resources\StateResource;
 use Filament\Http\Middleware\Authenticate;
 use App\Filament\Resources\CountryResource;
+use App\Models\Team;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -64,6 +67,10 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->tenant(Team::class,ownershipRelationship: 'team',slugAttribute: 'slug')
+            ->tenantRegistration(RegisterTeam::class)
+
+            ->tenantProfile(EditTeamProfile::class);
     }
 }

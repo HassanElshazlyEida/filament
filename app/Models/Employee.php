@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\City;
+use App\Models\Team;
 use App\Models\State;
 use App\Models\Country;
 use App\Models\Department;
@@ -42,6 +43,10 @@ class Employee extends Model
     public function getFullNameAttribute()
     {
         return "{$this->first_name} {$this->last_name}";
+    }
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
     
 }
