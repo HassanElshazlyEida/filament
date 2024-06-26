@@ -2,17 +2,18 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Tenancy\EditTeamProfile;
-use App\Filament\Pages\Tenancy\RegisterTeam;
 use Filament\Pages;
 use Filament\Panel;
+use App\Models\Team;
 use Filament\Widgets;
 use Filament\PanelProvider;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use App\Filament\Resources\StateResource;
 use Filament\Http\Middleware\Authenticate;
 use App\Filament\Resources\CountryResource;
-use App\Models\Team;
+use App\Filament\Pages\Tenancy\RegisterTeam;
+use App\Filament\Pages\Tenancy\EditTeamProfile;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -28,10 +29,15 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
+      
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Dashboard')
+                    ->icon('heroicon-o-user')
+                    ->url('/app'),
+            ])
             ->colors([
                 'primary' => Color::Lime,
                 'danger' => Color::Rose,
@@ -64,9 +70,6 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                Authenticate::class,
             ]);
           
     }

@@ -21,6 +21,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 
@@ -30,6 +31,17 @@ class AppPanelProvider extends PanelProvider
     {
         return $panel
             ->id('app')
+            ->default()
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Admin')
+                    ->icon('heroicon-o-user')
+                    ->visible(fn () => auth()->user()->isAdmin())
+                    ->url('/admin'),
+                
+            ])
+            ->profile()
+            ->registration()
             ->login()
             ->path('app')
             ->colors([
