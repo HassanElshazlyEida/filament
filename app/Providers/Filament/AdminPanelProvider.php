@@ -14,6 +14,7 @@ use Filament\Http\Middleware\Authenticate;
 use App\Filament\Resources\CountryResource;
 use App\Filament\Pages\Tenancy\RegisterTeam;
 use App\Filament\Pages\Tenancy\EditTeamProfile;
+use App\Http\Middleware\VerifyIsAdmin;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -70,6 +71,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                VerifyIsAdmin::class,
             ]);
           
     }
